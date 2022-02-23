@@ -1,4 +1,4 @@
-displayName: Traefik Real IP
+displayName: Traefik Real IP with real x-forwarder-ip
 type: middleware
 import: github.com/gloot/traefik-real-ip
 
