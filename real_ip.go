@@ -52,27 +52,14 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 }
 
 func (r *RealIPOverWriter) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	forwardedIPs := strings.Split(req.Header.Get(xForwardedFor), ",")
 
 	// TODO - Implement a max for the iterations
 	var realIP string
-	for i := len(forwardedIPs) - 1; i >= 0; i-- {
-		// TODO - Check if TrimSpace is necessary
-		trimmedIP := strings.TrimSpace(forwardedIPs[i])
-		if !r.excludedIP(trimmedIP) {
-			realIP = trimmedIP
-			break
-		}
-	}
-
-	if realIP == "" {
 		realIP = req.Header.Get(cfConnectingIP)
 		req.Header.Set(xForwardedFor, realIP)
-	}
+	    req.Header.Set(xRealIP, realIP)
 
-	req.Header.Set(xRealIP, realIP)
-
-	r.next.ServeHTTP(rw, req)
+	    r.next.ServeHTTP(rw, req)
 }
 
 func (r *RealIPOverWriter) excludedIP(s string) bool {
